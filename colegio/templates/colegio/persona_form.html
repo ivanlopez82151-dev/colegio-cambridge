@@ -1,0 +1,122 @@
+{% extends 'colegio/base.html' %}
+{% load static %}
+
+{% block title %}{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Persona - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<h2>{% if form.instance.pk %}Editar{% else %}Crear{% endif %} Persona</h2>
+
+<div class="card">
+    <div class="card-body">
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.documento.id_for_label }}">Documento:</label>
+                {{ form.documento }}
+                {% if form.documento.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.documento.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.nombre.id_for_label }}">Nombre:</label>
+                {{ form.nombre }}
+                {% if form.nombre.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.nombre.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.tipo.id_for_label }}">Tipo:</label>
+                {{ form.tipo }}
+                {% if form.tipo.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.tipo.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group" id="tipo-profesor-group">
+                <label for="{{ form.tipo_profesor.id_for_label }}">Tipo de Profesor:</label>
+                {{ form.tipo_profesor }}
+                {% if form.tipo_profesor.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.tipo_profesor.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.area.id_for_label }}">Área:</label>
+                {{ form.area }}
+                {% if form.area.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.area.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.oficina.id_for_label }}">Oficina:</label>
+                {{ form.oficina }}
+                {% if form.oficina.errors %}
+                    <ul class="errorlist">
+                        {% for error in form.oficina.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a href="{% url 'persona-list' %}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tipoSelect = document.querySelector('#id_tipo');
+        const tipoProfesorGroup = document.querySelector('#tipo-profesor-group');
+        
+        function toggleTipoProfesor() {
+            if (tipoSelect.value === 'profesor') {
+                tipoProfesorGroup.style.display = 'block';
+            } else {
+                tipoProfesorGroup.style.display = 'none';
+            }
+        }
+        
+        // Ejecutar al cargar la página
+        toggleTipoProfesor();
+        
+        // Ejecutar al cambiar el tipo
+        tipoSelect.addEventListener('change', toggleTipoProfesor);
+    });
+</script>
+{% endblock %}

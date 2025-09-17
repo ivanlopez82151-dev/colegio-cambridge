@@ -1,0 +1,74 @@
+{% extends 'colegio/base.html' %}
+{% load static %}
+
+{% block title %}Inicio - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<h2>Bienvenido al Sistema de Gestión del Colegio Cambridge</h2>
+
+<div class="dashboard">
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">Áreas</div>
+        <div class="dashboard-card-body">
+            <h3>{{ total_areas }}</h3>
+            <p>Total de áreas registradas</p>
+            <a href="{% url 'area-list' %}" class="btn btn-primary">Ver Áreas</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">Oficinas</div>
+        <div class="dashboard-card-body">
+            <h3>{{ total_oficinas }}</h3>
+            <p>Total de oficinas registradas</p>
+            <a href="{% url 'oficina-list' %}" class="btn btn-primary">Ver Oficinas</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">Salones</div>
+        <div class="dashboard-card-body">
+            <h3>{{ total_salones }}</h3>
+            <p>Total de salones de clase</p>
+            <a href="{% url 'salonclase-list' %}" class="btn btn-primary">Ver Salones</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">Personas</div>
+        <div class="dashboard-card-body">
+            <h3>{{ total_personas }}</h3>
+            <p>Total de empleados</p>
+            <a href="{% url 'persona-list' %}" class="btn btn-primary">Ver Personas</a>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">Profesores</div>
+        <div class="dashboard-card-body">
+            <h3>{{ total_profesores }}</h3>
+            <p>Total de profesores registrados</p>
+        </div>
+    </div>
+    
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">Administrativos</div>
+        <div class="dashboard-card-body">
+            <h3>{{ total_administrativos }}</h3>
+            <p>Total de personal administrativo</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Acciones Rápidas</div>
+    <div class="card-body">
+        <a href="{% url 'area-create' %}" class="btn btn-success">Crear Nueva Área</a>
+        <a href="{% url 'oficina-create' %}" class="btn btn-success">Crear Nueva Oficina</a>
+        <a href="{% url 'salonclase-create' %}" class="btn btn-success">Crear Nuevo Salón</a>
+        <a href="{% url 'persona-create' %}" class="btn btn-success">Crear Nueva Persona</a>
+        <a href="{% url 'reporte-area' %}" class="btn btn-primary">Ver Reporte de Áreas</a>
+        <a href="{% url 'exportar-reporte-pdf' %}" class="btn btn-danger">Exportar Reporte a PDF</a>
+    </div>
+</div>
+{% endblock %}

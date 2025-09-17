@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Gestión - Colegio Cambridge{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'colegio/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Gestión - Colegio Cambridge</h1>
+        </header>
+        
+        <nav class="nav">
+            <a href="{% url 'home' %}" class="btn btn-primary nav-link">Inicio</a>
+            <a href="{% url 'area-list' %}" class="btn btn-primary nav-link">Áreas</a>
+            <a href="{% url 'oficina-list' %}" class="btn btn-primary nav-link">Oficinas</a>
+            <a href="{% url 'salonclase-list' %}" class="btn btn-primary nav-link">Salones</a>
+            <a href="{% url 'persona-list' %}" class="btn btn-primary nav-link">Personas</a>
+            <a href="{% url 'reporte-area' %}" class="btn btn-success nav-link">Reportes</a>
+        </nav>
+        
+        <main>
+            {% block content %}
+            {% endblock %}
+        </main>
+        
+        <footer class="footer">
+            <p>&copy; 2025 - Sistema de Gestión - Colegio Cambridge</p>
+        </footer>
+    </div>
+</body>
+</html>
