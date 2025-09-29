@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GraphiQL - Colegio Cambridge</title>
+    <style>
+        body {
+            height: 100%;
+            margin: 0;
+            width: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        #graphiql {
+            height: 100vh;
+        }
+        .header {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 40px;
+            line-height: 40px;
+        }
+        #graphiql-container {
+            padding-top: 40px;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">GraphiQL - Colegio Cambridge</div>
+    <div id="graphiql-container">
+        <div id="graphiql"></div>
+    </div>
+
+    <!-- Cargar React -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Cargar GraphiQL -->
+    <script src="https://unpkg.com/graphiql@2.4.7/graphiql.min.js" crossorigin></script>
+    <link rel="stylesheet" href="https://unpkg.com/graphiql@2.4.7/graphiql.min.css" crossorigin />
+
+    <script>
+        // Función para hacer peticiones GraphQL
+        const graphQLFetcher = (graphQLParams) => {
+            return fetch('/graphql/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(graphQLParams),
+            })
+            .then(response => response.json())
+            .catch(error => console.error('Error:', error));
+        };
+
+        // Renderizar GraphiQL
+        ReactDOM.render(
+            React.createElement(GraphiQL, {
+                fetcher: graphQLFetcher,
+                defaultVariableEditorOpen: true,
+            }),
+            document.getElementById('graphiql')
+        );
+    </script>
+</body>
+</html>

@@ -1,34 +1,22 @@
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Count
-from .models import Area, Oficina, SalonClase, Persona
-from .forms import AreaForm, OficinaForm, SalonClaseForm, PersonaForm
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.lib.colors import HexColor
-from django.http import HttpResponse
-from django.shortcuts import render
+from datetime import datetime
+import json
+from graphql import graphql_sync
 
-def home_view(request):
-    # Obtener estadísticas para mostrar en la página principal
-    total_areas = Area.objects.count()
-    total_oficinas = Oficina.objects.count()
-    total_salones = SalonClase.objects.count()
-    total_personas = Persona.objects.count()
-    total_profesores = Persona.objects.filter(tipo='profesor').count()
-    total_administrativos = Persona.objects.filter(tipo='administrativo').count()
-    
-    context = {
-        'total_areas': total_areas,
-        'total_oficinas': total_oficinas,
-        'total_salones': total_salones,
-        'total_personas': total_personas,
-        'total_profesores': total_profesores,
-        'total_administrativos': total_administrativos,
-    }
-    
-    return render(request, 'colegio/home.html', context)
+# Importar modelos y formularios
+from .models import Area, Oficina, SalonClase, Persona
+from .forms import AreaForm, OficinaForm, SalonClaseForm, PersonaForm
+from colegio_project.schema import schema
 
 # Vistas para Area
 class AreaListView(ListView):
@@ -122,8 +110,28 @@ class PersonaDeleteView(DeleteView):
     template_name = 'colegio/persona_confirm_delete.html'
     success_url = reverse_lazy('persona-list')
 
-    from django.db.models import Count
+# Vista para la página principal
+def home_view(request):
+    # Obtener estadísticas para mostrar en la página principal
+    total_areas = Area.objects.count()
+    total_oficinas = Oficina.objects.count()
+    total_salones = SalonClase.objects.count()
+    total_personas = Persona.objects.count()
+    total_profesores = Persona.objects.filter(tipo='profesor').count()
+    total_administrativos = Persona.objects.filter(tipo='administrativo').count()
+    
+    context = {
+        'total_areas': total_areas,
+        'total_oficinas': total_oficinas,
+        'total_salones': total_salones,
+        'total_personas': total_personas,
+        'total_profesores': total_profesores,
+        'total_administrativos': total_administrativos,
+    }
+    
+    return render(request, 'colegio/home.html', context)
 
+# Vista para el reporte de áreas
 class ReporteAreaView(ListView):
     model = Area
     template_name = 'colegio/reporte_area.html'
@@ -147,7 +155,8 @@ class ReporteAreaView(ListView):
             'total_empleados': total_empleados,
         })
         return context
-    
+
+# Vista para exportar reporte a PDF
 def exportar_reporte_pdf(request):
     # Crear el objeto HttpResponse con el encabezado PDF
     response = HttpResponse(content_type='application/pdf')
@@ -172,7 +181,6 @@ def exportar_reporte_pdf(request):
         canvas.drawString(inch, height - inch, "Reporte de Áreas y Empleados")
         
         # Fecha
-        from datetime import datetime
         fecha = datetime.now().strftime("%d/%m/%Y %H:%M")
         canvas.setFont('Helvetica', 10)
         canvas.setFillColorRGB(0, 0, 0)
@@ -346,3 +354,47 @@ def exportar_reporte_pdf(request):
     p.save()
     
     return response
+
+# Vistas para GraphQL
+def debug_schema(request):
+    try:
+        # Intentar obtener el esquema
+        schema_str = str(schema)
+        return JsonResponse({
+            'status': 'ok',
+            'schema': schema_str[:500] + '...' if len(schema_str) > 500 else schema_str
+        })
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'error': str(e)
+        }, status=500)
+
+def graphiql_interface(request):
+    return render(request, 'graphene/graphiql.html')
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def graphql_endpoint(request):
+    try:
+        data = json.loads(request.body)
+        query = data.get('query')
+        variables = data.get('variables')
+        
+        result = graphql_sync(schema, query, variable_values=variables)
+        
+        response_data = {
+            'data': result.data
+        }
+        
+        if result.errors:
+            response_data['errors'] = [str(error) for error in result.errors]
+        
+        return JsonResponse(response_data)
+    except Exception as e:
+        return JsonResponse({
+            'errors': [str(e)]
+        }, status=400)
+
+def graphiql_online(request):
+    return render(request, 'graphene/graphiql_online.html')
